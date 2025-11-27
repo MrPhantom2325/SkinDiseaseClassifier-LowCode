@@ -1,0 +1,132 @@
+{
+  "name": "SkinDiseaseClassifier",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "871e3113-1ff6-4f98-8629-10dd105cd106",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://serverless.roboflow.com/skin-diseases-gynnb/1",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "byPVU1CN5XT3Uqa8SXkK"
+            },
+            {
+              "name": "image",
+              "value": "={{ $json[\"image_url\"] }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "ee84ccbf-06b5-48d9-9f45-6bc0632e3ac8",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f560557f-890e-4c4a-9da1-11c85a1f4a03",
+              "name": "image_url",
+              "value": "https://source.roboflow.com/55yVoZKlwYO4qQon47fnngvfXEG2/i8PXZB94dqcG0ZwabbgJ/original.jpg",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "3a52ab1a-25fe-4236-b156-5eed5e5f8104",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the Roboflow API response\nconst data = $json[\"predictions\"] || [];\n\nif (data.length === 0) {\n  return [{ result: \"⚠️ No disease detected or invalid image.\" }];\n}\n\nconst first = data[0];\nconst label = first[\"class\"] || \"unknown\";\nconst conf = (first[\"confidence\"] * 100).toFixed(2);\n\nreturn [{\n  result: `🩺 Detected condition: ${label}\\nConfidence: ${conf}%`\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "63dbbbb6-5972-4fc8-8811-22668e8765bc",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b8784558-76da-4c4a-8c5c-2ae1779eec4b",
+  "meta": {
+    "instanceId": "99977213c246a3a0314ca1be2bae54c5981421069abed0fe99d93f14629336c4"
+  },
+  "id": "3cGDSHhCXa4EUKqv",
+  "tags": []
+}
