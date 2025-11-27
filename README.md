@@ -1,2 +1,2 @@
 # SkinDiseaseClassifier-LowCode
-Made using N8N adn RoboFlow
+Made using N8N and RoboFlow
